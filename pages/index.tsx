@@ -6,6 +6,7 @@ import axios from "axios";
 // This function detects most providers injected at window.ethereum
 import detectEthereumProvider from '@metamask/detect-provider';
 import MetaMaskOnboarding from '@metamask/onboarding';
+import crypto from "crypto";
 
 type ResponseType = {
     status: number,
@@ -45,6 +46,7 @@ const Home: NextPage = () => {
 
     const createWallet = async () => {
       try {
+
           const response: ResponseType = await axios.post(
               'api/create-wallet',
               {
