@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import type { NextPage } from 'next'
 import { ethers } from "ethers";
 import {useState} from "react";
@@ -16,19 +16,18 @@ type ResponseType = {
 
 const Home: NextPage = () => {
     const [wallet, setWallet] = useState<any>({});
-    const [provider, setProvider] = useState<any>({});
-    const [signer, setSigner] = useState<any>({});
     const [status, setStatus] = useState('Not connected to MetaMask');
     const [accounts, setAccounts] = useState<any[]>([]);
+    const [disabled, setDisabled] = useState<boolean>(false);
     const onboarding: any = React.useRef<MetaMaskOnboarding>();
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!onboarding.current) {
             onboarding.current = new MetaMaskOnboarding();
         }
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const detectMetamask = async () => {
             if (MetaMaskOnboarding.isMetaMaskInstalled() || await detectMetamaskInstallation()) {
                 if (accounts.length > 0) {
@@ -37,6 +36,8 @@ const Home: NextPage = () => {
                 } else {
                     setStatus('Not connected to MetaMask');
                 }
+            } else {
+                setStatus('Please install MetaMask')
             }
         }
 
@@ -48,7 +49,9 @@ const Home: NextPage = () => {
           const response: ResponseType = await axios.post(
               'api/create-wallet',
               {
-                  locale: 'en'
+                  extraEntropy: '',
+                  locale: 'en',
+                  path: ''
               }
           )
           console.log('response', response);
@@ -65,13 +68,18 @@ const Home: NextPage = () => {
 
     const connectMetamask = async () => {
         setStatus('Connecting to MetaMask..');
+        setDisabled(true);
         if (MetaMaskOnboarding.isMetaMaskInstalled() || await detectMetamaskInstallation()) {
             console.log('MetaMask installed!');
             (window as any).ethereum
                 .request({ method: 'eth_requestAccounts' })
                 .then((newAccounts: any[]) => setAccounts(newAccounts));
         } else {
-            onboarding.current.startOnboarding();
+            try {
+                onboarding.current.startOnboarding();
+            } catch(e) {
+                console.log('error', e);
+            }
         }
         setStatus(`Connected to MetaMask: ${JSON.stringify(accounts)}`);
     }
@@ -97,7 +105,7 @@ const Home: NextPage = () => {
             <br/>
 
             <h3>2. Wallet conection to MetaMask</h3>
-            <button onClick={connectMetamask}>CONNECT TO METAMASK</button>
+            <button disabled={disabled} onClick={connectMetamask}>CONNECT TO METAMASK</button>
             <pre>Status: {status}</pre>
 
             <br/>

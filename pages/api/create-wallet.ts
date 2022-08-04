@@ -10,10 +10,14 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const options = req.body
+  const { extraEntropy, locale, path } = req.body;
   console.log('ethers', ethers);
 
-  let wallet: any = ethers.Wallet.createRandom(options || {});
+  let wallet: any = ethers.Wallet.createRandom({
+    extraEntropy,
+    locale,
+    path
+  });
 
   console.log('wallet', wallet);
 
