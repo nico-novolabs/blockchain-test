@@ -91,10 +91,6 @@ const Home: NextPage = () => {
     return (
         <div>
             <h1>Metamask wallet creation test</h1>
-            <pre>
-                In order to test the <strong>wallet creation</strong> & <strong>connection to metamask</strong>,
-                press the buttons <strong>in order</strong>
-            </pre>
             <br/>
             <h3>1. Wallet creation</h3>
             <button onClick={createWallet}>CREATE WALLET</button>
