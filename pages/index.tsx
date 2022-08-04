@@ -18,7 +18,6 @@ const Home: NextPage = () => {
     const [wallet, setWallet] = useState<any>({});
     const [status, setStatus] = useState('Not connected to MetaMask');
     const [accounts, setAccounts] = useState<any[]>([]);
-    const [disabled, setDisabled] = useState<boolean>(false);
     const onboarding: any = React.useRef<MetaMaskOnboarding>();
 
     useEffect(() => {
@@ -68,7 +67,6 @@ const Home: NextPage = () => {
 
     const connectMetamask = async () => {
         setStatus('Connecting to MetaMask..');
-        setDisabled(true);
         if (MetaMaskOnboarding.isMetaMaskInstalled() || await detectMetamaskInstallation()) {
             console.log('MetaMask installed!');
             (window as any).ethereum
@@ -101,7 +99,7 @@ const Home: NextPage = () => {
             <br/>
 
             <h3>2. Wallet conection to MetaMask</h3>
-            <button disabled={disabled} onClick={connectMetamask}>CONNECT TO METAMASK</button>
+            <button onClick={connectMetamask}>CONNECT TO METAMASK</button>
             <pre>Status: {status}</pre>
 
             <br/>
