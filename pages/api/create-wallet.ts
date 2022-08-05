@@ -33,7 +33,5 @@ export default function handler(
     mnemonic: wallet._mnemonic()
   }
 
-  console.log(ethers.utils.mnemonicToEntropy(wallet.mnemonic.phrase))
-
   res.status(200).json({ wallet })
 }

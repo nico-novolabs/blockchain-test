@@ -19,12 +19,16 @@ const Home: NextPage = () => {
     const [wallet, setWallet] = useState<any>({});
     const [status, setStatus] = useState('Not connected to MetaMask');
     const [accounts, setAccounts] = useState<any[]>([]);
+    const [isTestNet, setIsTestNet] = useState<boolean>(false);
     const onboarding: any = React.useRef<MetaMaskOnboarding>();
 
     useEffect(() => {
         if (!onboarding.current) {
             onboarding.current = new MetaMaskOnboarding();
         }
+        let existentWallet = localStorage.getItem('wallet') || '{}';
+        existentWallet = JSON.parse(existentWallet);
+        setWallet(existentWallet)
     }, []);
 
     useEffect(() => {
@@ -44,9 +48,82 @@ const Home: NextPage = () => {
         detectMetamask();
     }, [accounts]);
 
+    /*const addPolygonChain = () => {
+        /!*
+        * Network Name
+            Matic Mainnet
+        Network URL
+            https://polygon-rpc.com/
+        Chain ID
+            137
+        Currency Symbol
+            MATIC
+        Block Explorer URL
+            https://polygonscan.com/
+        *!/
+        (window as any).ethereum
+            .request({
+                method: 'wallet_addEthereumChain',
+                params: {
+                    chainId: '137', // A 0x-prefixed hexadecimal string
+                    chainName: 'Matic Mainnet',
+                    nativeCurrency: {
+                        name: 'MATIC',
+                        symbol: 'MATIC', // 2-6 characters long
+                        decimals: 18,
+                    },
+                    rpcUrls: ['https://polygon-rpc.com/'],
+                    blockExplorerUrls: ['https://polygonscan.com/'],
+                    iconUrls: [] // Currently ignored.
+                }
+            })
+    }*/
+
+    const addPolygonNetwork = async () => {
+
+        if (await detectMetamaskInstallation() && typeof window.ethereum !== 'undefined') {
+            let params;
+
+            if (!isTestNet) {
+                params = [{
+                    chainId: '0x89',
+                    chainName: 'Matic Mainnet',
+                    nativeCurrency: {
+                        name: 'MATIC',
+                        symbol: 'MATIC',
+                        decimals: 18
+                    },
+                    rpcUrls: ['https://polygon-rpc.com/'],
+                    blockExplorerUrls: ['https://polygonscan.com/']
+                }]
+            } else {
+                params = [{
+                    chainId: '0x13881',
+                    chainName: 'Polygon Testnet',
+                    nativeCurrency: {
+                        name: 'MATIC',
+                        symbol: 'MATIC',
+                        decimals: 18
+                    },
+                    rpcUrls: ['https://matic-mumbai.chainstacklabs.com'],
+                    blockExplorerUrls: ['https://mumbai.polygonscan.com/']
+                }]
+            }
+
+            (window as any).ethereum
+                .request({
+                    method: 'wallet_addEthereumChain',
+                    params
+                })
+                .then((a: any, b: any) => console.log('Success', a, b))
+                    .catch((error: any) => console.log("Error", error.message));
+        } else {
+            alert('Unable to locate a compatible web3 browser!');
+        }
+    }
+
     const createWallet = async () => {
       try {
-
           const response: ResponseType = await axios.post(
               'api/create-wallet',
               {
@@ -59,6 +136,7 @@ const Home: NextPage = () => {
 
           if (response && response.status === 200) {
               setWallet(response.data.wallet);
+              localStorage.setItem('wallet', JSON.stringify(response.data.wallet));
           } else {
               console.log('error', response);
           }
@@ -104,6 +182,22 @@ const Home: NextPage = () => {
             <button onClick={connectMetamask}>CONNECT TO METAMASK</button>
             <pre>Status: {status}</pre>
 
+            <br/>
+
+            <h3>3. Add Polygon Network</h3>
+            <div>
+                <label htmlFor="testNet">Polygon TestNet ? </label>
+                <input
+                    type="checkbox"
+                    checked={isTestNet}
+                    onChange={(e) => {setIsTestNet(e.target.checked)}}
+                />
+            </div>
+            <br/>
+            <button onClick={() => addPolygonNetwork()}>ADD POLYGON NETWORK</button>
+            <pre></pre>
+
+            <br/>
             <br/>
         </div>
     )
