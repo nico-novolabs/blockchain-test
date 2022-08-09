@@ -206,6 +206,7 @@ const Home: NextPage = () => {
                     value={amount}
                     onChange={(e) => {setAmount(e.target.value)}}
                 />
+                <pre>{JSON.stringify({from: accounts[0], to: accounts[0], amount}, null, 4)}</pre>
             </div>
             <br/>
             <button onClick={() => pay()}>MAKE TRANSACTION</button>
