@@ -1,14 +1,16 @@
 import { ethers } from 'ethers';
 
-export async function payWithMetamask(sender: string, receiver: string, amount: string, privateKey: string) {
-    console.log(`payWithMetamask(receiver=${receiver}, sender=${sender}, amount=${amount})`)
+export async function makeTransaction(sender: string, receiver: string, amount: string, privateKey: string) {
+    console.log(`makeTransaction(receiver=${receiver}, sender=${sender}, amount=${amount})`)
 
     const provider = new ethers.providers.InfuraProvider( "maticmum");
     const wallet = new ethers.Wallet(privateKey);
     const walletSigner = wallet.connect(provider);
-    const gasPrice = await provider.getGasPrice();
-    console.log('gasPrice', bigNumberToNumber(gasPrice));
     const gasLimit = 100000;
+    const gasPrice = await provider.getGasPrice();
+
+    console.log('gasPrice', bigNumberToNumber(gasPrice));
+
     const tx = {
         from: sender,
         to: receiver,

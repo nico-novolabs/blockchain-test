@@ -7,7 +7,7 @@ import axios from "axios";
 import detectEthereumProvider from '@metamask/detect-provider';
 import MetaMaskOnboarding from '@metamask/onboarding';
 import crypto from "crypto";
-import {payWithMetamask} from "./utils";
+import {makeTransaction} from "./utils";
 
 type ResponseType = {
     status: number,
@@ -153,7 +153,7 @@ const Home: NextPage = () => {
     const pay = async () => {
         setTransactionHash('Pending transaction...');
         if(accounts && accounts[0] && amount && wallet?.signingKey?.privateKey) {
-            const hash = await payWithMetamask(accounts[0], accounts[0], amount, wallet.signingKey.privateKey);
+            const hash = await makeTransaction(accounts[0], accounts[0], amount, wallet.signingKey.privateKey);
             console.log('transactionHash', hash);
             setTransactionHash(hash)
         } else {
