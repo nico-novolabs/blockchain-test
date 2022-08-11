@@ -73,7 +73,7 @@ const Home: NextPage = () => {
         detectMetamask();
     }, [accounts]);
 
-    /** Metamask */
+    // MetaMask
 
     const payWithMetamask = async () => {
         setTransactionHash('Pending transaction...');
@@ -161,7 +161,7 @@ const Home: NextPage = () => {
         return await detectEthereumProvider();
     }
 
-    /** WalletConnect */
+    // WalletConnect
 
     const scanQR = async () => {
 
@@ -253,7 +253,7 @@ const Home: NextPage = () => {
     }
 
 
-    /** Ethers.js */
+    // Ethers.js
 
     const createWallet = async () => {
         try {
@@ -297,7 +297,7 @@ const Home: NextPage = () => {
 
     }
 
-    /** Minteando.me */
+    // Minteando.me
 
     const createNFTCollection = async () => {
         const collectionData: CollectionDataType = {
@@ -504,7 +504,9 @@ const Home: NextPage = () => {
 
             <hr/>
 
-            <h3></h3>
+            <div style={style}>
+
+            </div>
         </div>
     )
 }
