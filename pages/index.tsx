@@ -356,140 +356,151 @@ const Home: NextPage = () => {
         setMintedNftData(response?.data?.result);
     }
 
+    const style = {
+        backgroundColor: '#1a1a1a',
+        margin: '20px',
+        padding: '20px'
+    }
+
     return (
         <div>
             <h1>Blockchain tests</h1>
-            <br/>
-            <h2>Wallet creation</h2>
-            <button onClick={createWallet}>CREATE WALLET</button>
-            <pre>Wallet: <span>{JSON.stringify(wallet, null, 4)}</span></pre>
 
-            <br/>
-            <hr/>
-            <br/>
-
-            <h2>Wallet connection</h2>
-
-            <h3>Wallet conection to MetaMask via Chrome Extension</h3>
-            <button onClick={connectMetamask}>CONNECT TO METAMASK</button>
-            <pre>Status: {status}</pre>
-
-            <br/>
-            <br/>
-
-            <h3>Wallet Conection to MetaMask via QR Code</h3>
-            <button onClick={scanQR}>CONNECT WALLET</button>
-            <pre>Scanned wallet: {JSON.stringify(scannedWallet, null, 4)}</pre>
-            <pre>LocalStorage wallet: {JSON.stringify(walletConnect, null, 4)}</pre>
-
-            <br/>
-            <hr/>
-            <br/>
-
-            <h2>Add Polygon Network in Metamask</h2>
-
-            <h3>Add network in chrome extension</h3>
-            <div>
-                <label htmlFor="testNet">Polygon TestNet ? </label>
-                <input
-                    type="checkbox"
-                    checked={isTestNet}
-                    onChange={(e) => {setIsTestNet(e.target.checked)}}
-                />
+            {/* Wallet Creation */}
+            <div style={style}>
+                <h2>Wallet creation</h2>
+                <button onClick={createWallet}>CREATE WALLET</button>
+                <pre>Wallet: <span>{JSON.stringify(wallet, null, 4)}</span></pre>
             </div>
-            <br/>
-            <button onClick={() => addPolygonNetwork()}>ADD POLYGON NETWORK</button>
-            <pre></pre>
 
-            <br/>
-            <br/>
-
-            <h3>Add network in the mobile app</h3>
-            <pre>TODO - I think the network it has to be manually configured in the mobile app </pre>
-
-            <br/>
             <hr/>
-            <br/>
 
+            {/* Wallet Connection */}
+            <div style={style}>
+                <h2>Wallet connection</h2>
 
-            <h2>Make Transaction</h2>
-            <div>
-                <label htmlFor="testNet">Amount: </label>
-                <input
-                    type="number"
-                    value={amount}
-                    onChange={(e) => {setAmount(e.target.value)}}
-                />
-                <pre>{JSON.stringify({
-                    from: accounts ? accounts[0] : '',
-                    to: accounts ? accounts[0] : '',
-                    amount
-                }, null, 4)}</pre>
+                <h3>Wallet conection to MetaMask via Chrome Extension</h3>
+                <button onClick={connectMetamask}>CONNECT TO METAMASK</button>
+                <pre>Status: {status}</pre>
+
+                <br/>
+                <br/>
+
+                <h3>Wallet Conection to MetaMask via QR Code</h3>
+                <button onClick={scanQR}>CONNECT WALLET</button>
+                <pre>Scanned wallet: {JSON.stringify(scannedWallet, null, 4)}</pre>
+                <pre>LocalStorage wallet: {JSON.stringify(walletConnect, null, 4)}</pre>
             </div>
-            <br/>
-            <h3>With Ethers using the Private Key without confirmation</h3>
-            <button onClick={() => pay()}>MAKE TRANSACTION WITHOUT CONFIRMATION</button>
 
-            <br/>
-            <br/>
-            <br/>
-
-            <h3>With Chrome Extension</h3>
-            <button onClick={() => payWithMetamask()}>MAKE TRANSACTION WITH CHROME EXTENSION</button>
-
-            <br/>
-            <br/>
-            <br/>
-
-            <h3>With Wallet Connect (QR)</h3>
-            <button onClick={() => payWithWalletConnect()}>MAKE TRANSACTION WITH MOBILE APP</button>
-            <pre>Transaction Hash: {JSON.stringify(transactionHash, null, 4)}</pre>
-
-            <br/>
             <hr/>
-            <br/>
 
-            <h2> Minteando.me </h2>
+            {/* Polygon Network */}
+            <div style={style}>
+                <h2>Add Polygon Network in Metamask</h2>
 
+                <h3>Add network in chrome extension</h3>
+                <div>
+                    <label htmlFor="testNet">Polygon TestNet ? </label>
+                    <input
+                        type="checkbox"
+                        checked={isTestNet}
+                        onChange={(e) => {setIsTestNet(e.target.checked)}}
+                    />
+                </div>
+                <br/>
+                <button onClick={() => addPolygonNetwork()}>ADD POLYGON NETWORK</button>
+                <pre></pre>
 
-            <h3>Create NFT Collection</h3>
-            <button onClick={createNFTCollection}>CREATE NFT COLLECTION</button>
-            <pre>Collection Data: {JSON.stringify(nftCollectionData, null, 4)}</pre>
+                <br/>
+                <br/>
 
-            <br/>
-
-            <h3>Get NFT Collection Data</h3>
-            <div>
-                <label htmlFor="collectionId">Collection ID: </label>
-                <input
-                    type="text"
-                    value={collectionId}
-                    onChange={(e) => {setCollectionId(e.target.value)}}
-                />
+                <h3>Add network in the mobile app</h3>
+                <pre>TODO - I think the network it has to be manually configured in the mobile app </pre>
             </div>
-            <br/>
-            <button onClick={getNFTCollection}>GET NFT COLLECTION</button>
-            <pre>Collection Data: {JSON.stringify(retrievedNftCollectionData, null, 4)}</pre>
 
-            <br/>
-
-            <h3>Mint NFT From Collection</h3>
-            <div>
-                <label htmlFor="collectionId">Collection ID: </label>
-                <input
-                    type="text"
-                    value={collectionId}
-                    onChange={(e) => {setCollectionId(e.target.value)}}
-                />
-                <pre>Wallet: {accounts ? accounts[0] : ''}</pre>
-            </div>
-            <br/>
-            <button onClick={mintNFT}>MINT NFT FROM COLLECTION</button>
-            <pre>Minted NFT Data: {JSON.stringify(mintedNftData, null, 4)}</pre>
-
-            <br/>
             <hr/>
-            <br/>
+
+            {/* Transactions */}
+            <div style={style}>
+                <br/>
+
+                <h2>Make Transaction</h2>
+                <div>
+                    <label htmlFor="testNet">Amount: </label>
+                    <input
+                        type="number"
+                        value={amount}
+                        onChange={(e) => {setAmount(e.target.value)}}
+                    />
+                    <pre>{JSON.stringify({
+                        from: accounts ? accounts[0] : '',
+                        to: accounts ? accounts[0] : '',
+                        amount
+                    }, null, 4)}</pre>
+                </div>
+                <br/>
+                <h3>With Ethers using the Private Key without confirmation</h3>
+                <button onClick={() => pay()}>MAKE TRANSACTION WITHOUT CONFIRMATION</button>
+
+                <br/>
+                <br/>
+                <br/>
+
+                <h3>With Chrome Extension</h3>
+                <button onClick={() => payWithMetamask()}>MAKE TRANSACTION WITH CHROME EXTENSION</button>
+
+                <br/>
+                <br/>
+                <br/>
+
+                <h3>With Wallet Connect (QR)</h3>
+                <button onClick={() => payWithWalletConnect()}>MAKE TRANSACTION WITH MOBILE APP</button>
+                <pre>Transaction Hash: {JSON.stringify(transactionHash, null, 4)}</pre>
+            </div>
+
+            <hr/>
+
+            {/* Minteando.me */}
+            <div style={style}>
+                <h2> Minteando.me </h2>
+
+                <h3>Create NFT Collection</h3>
+                <button onClick={createNFTCollection}>CREATE NFT COLLECTION</button>
+                <pre>Collection Data: {JSON.stringify(nftCollectionData, null, 4)}</pre>
+
+                <br/>
+
+                <h3>Get NFT Collection Data</h3>
+                <div>
+                    <label htmlFor="collectionId">Collection ID: </label>
+                    <input
+                        type="text"
+                        value={collectionId}
+                        onChange={(e) => {setCollectionId(e.target.value)}}
+                    />
+                </div>
+                <br/>
+                <button onClick={getNFTCollection}>GET NFT COLLECTION</button>
+                <pre>Collection Data: {JSON.stringify(retrievedNftCollectionData, null, 4)}</pre>
+
+                <br/>
+
+                <h3>Mint NFT From Collection</h3>
+                <div>
+                    <label htmlFor="collectionId">Collection ID: </label>
+                    <input
+                        type="text"
+                        value={collectionId}
+                        onChange={(e) => {setCollectionId(e.target.value)}}
+                    />
+                    <pre>Wallet: {accounts ? accounts[0] : ''}</pre>
+                </div>
+                <br/>
+                <button onClick={mintNFT}>MINT NFT FROM COLLECTION</button>
+                <pre>Minted NFT Data: {JSON.stringify(mintedNftData, null, 4)}</pre>
+            </div>
+
+            <hr/>
 
             <h3></h3>
         </div>
