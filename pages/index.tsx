@@ -17,6 +17,7 @@ import {
     MintNftDataType,
     mintNFTFromCollection
 } from "./mint4all";
+import {makeTransactionWithMetamask} from "./metamask";
 
 type ResponseType = {
     status: number,
@@ -31,7 +32,6 @@ const Home: NextPage = () => {
     const [accounts, setAccounts] = useState<any[]>([]);
     const [isTestNet, setIsTestNet] = useState<boolean>(false);
     const onboarding: any = React.useRef<MetaMaskOnboarding>();
-    const [provider, setProvider] = useState<any>({});
     const [transactionHash, setTransactionHash] = useState<any>('');
     const [amount, setAmount] = useState('0.1');
     const [scannedWallet, setScannedWallet] = useState<any>({});
@@ -54,7 +54,6 @@ const Home: NextPage = () => {
         setAccounts(existentScannedWallet ? existentScannedWallet.accounts : existentWallet.accounts || [])
         setWallet(existentWallet);
         setWalletConnect(existentScannedWallet);
-        getProvider();
     }, []);
 
     useEffect(() => {
@@ -73,6 +72,26 @@ const Home: NextPage = () => {
 
         detectMetamask();
     }, [accounts]);
+
+    /** Metamask */
+
+    const payWithMetamask = async () => {
+        setTransactionHash('Pending transaction...');
+        try {
+            const hash = await makeTransactionWithMetamask(
+                accounts[0],
+                accounts[0],
+                amount
+            );
+            console.log('transactionHash', hash);
+            setTransactionHash(hash)
+        } catch (e: any) {
+            console.log('Transaction error', e);
+            alert(`Transaction Error: ${e.message}`)
+            setTransactionHash(e.message);
+        }
+
+    }
 
     const addPolygonNetwork = async () => {
 
@@ -121,29 +140,6 @@ const Home: NextPage = () => {
         }
     }
 
-    const createWallet = async () => {
-      try {
-          const response: ResponseType = await axios.post(
-              'api/create-wallet',
-              {
-                  extraEntropy: '',
-                  locale: 'en',
-                  path: ''
-              }
-          )
-          console.log('response', response);
-
-          if (response && response.status === 200) {
-              setWallet(response.data.wallet);
-              localStorage.setItem('wallet', JSON.stringify(response.data.wallet));
-          } else {
-              console.log('error', response);
-          }
-      } catch (e) {
-          console.log('error', e);
-      }
-  }
-
     const connectMetamask = async () => {
         setStatus('Connecting to MetaMask..');
         if (MetaMaskOnboarding.isMetaMaskInstalled() || await detectMetamaskInstallation()) {
@@ -165,65 +161,7 @@ const Home: NextPage = () => {
         return await detectEthereumProvider();
     }
 
-    const getProvider = async () => {
-        const polygonProvider = new ethers.providers.InfuraProvider( "maticmum")
-        console.log('polygonProvider', polygonProvider);
-        setProvider(polygonProvider);
-    }
-
-    const pay = async () => {
-        setTransactionHash('Pending transaction...');
-        if(accounts && accounts[0] && amount && wallet?.signingKey?.privateKey) {
-            const hash = await makeTransactionWithEthers(accounts[0], accounts[0], amount, wallet.signingKey.privateKey);
-            console.log('transactionHash', hash);
-            setTransactionHash(hash)
-        } else {
-            setTransactionHash(`Tansaction failed`);
-            alert(`Missing required attrs: ${accounts[0]}, ${amount}, ${wallet?.signingKey?.privateKey}`)
-        }
-
-    }
-
-    const createNFTCollection = async () => {
-        const collectionData: CollectionDataType = {
-            name: "NFT Collection Test 2",
-            symbol: "NFTEST2",
-            maxNFTs: 5,
-            blockchain: 4, // Polygon Testnet Blockchain
-            smartContractType: 0, // Smart contract types ?
-            configurationNFTs : {
-                whiteList: false,
-                uniqueImage: "https://i.ibb.co/LddtCyv/Blog-Post-Free-Stock-Images-River-Mountain-Forest-1080x675.jpg"
-            },
-            attributes: [
-                {
-                    key: "price",
-                    value: "89.99"
-                },
-                {
-                    key: "accessType",
-                    value: "normal"
-                },
-                {
-                    key: "image",
-                    value: "https://i.ibb.co/LddtCyv/Blog-Post-Free-Stock-Images-River-Mountain-Forest-1080x675.jpg"
-                },
-                {
-                    key: "commission",
-                    value: "3"
-                }
-            ]
-        }
-
-        const response: any = await createNFTCollectionWithMint4All(collectionData);
-        setNftCollectionData(response?.data?.result)
-        setCollectionId(response?.data?.result?.smartContractId)
-    }
-
-    const getNFTCollection = async () => {
-        const response: any = await getNFTCollectionWithMint4All(collectionId);
-        setRetrievedNftCollectionData(response?.data?.result);
-    }
+    /** WalletConnect */
 
     const scanQR = async () => {
 
@@ -297,14 +235,108 @@ const Home: NextPage = () => {
     }
 
     const payWithWalletConnect = async () => {
+        try {
+            setTransactionHash('Pending transaction...');
+            const hash = await makeTransactionWithWalletConnect(
+                walletConnect.accounts[0],
+                walletConnect.accounts[0],
+                amount
+            );
+            console.log('transactionHash', hash);
+            setTransactionHash(hash)
+        } catch (e: any) {
+            console.log('Transaction error', e);
+            alert(`Transaction Error: ${e.message}`)
+            setTransactionHash(e.message);
+        }
+    }
+
+
+    /** Ethers.js */
+
+    const createWallet = async () => {
+        try {
+            const response: ResponseType = await axios.post(
+                'api/create-wallet',
+                {
+                    extraEntropy: '',
+                    locale: 'en',
+                    path: ''
+                }
+            )
+            console.log('response', response);
+
+            if (response && response.status === 200) {
+                setWallet(response.data.wallet);
+                localStorage.setItem('wallet', JSON.stringify(response.data.wallet));
+            } else {
+                console.log('error', response);
+            }
+        } catch (e) {
+            console.log('error', e);
+        }
+    }
+
+    const pay = async () => {
         setTransactionHash('Pending transaction...');
-        const hash = await makeTransactionWithWalletConnect(
-            walletConnect.accounts[0],
-            walletConnect.accounts[0],
-            amount
-        );
-        console.log('transactionHash', hash);
-        setTransactionHash(hash)
+        try {
+            if(accounts && accounts[0] && amount && wallet?.signingKey?.privateKey) {
+                const hash = await makeTransactionWithEthers(accounts[0], accounts[0], amount, wallet.signingKey.privateKey);
+                console.log('transactionHash', hash);
+                setTransactionHash(hash)
+            } else {
+                setTransactionHash(`Tansaction failed`);
+                alert(`Missing required attrs: ${accounts[0]}, ${amount}, ${wallet?.signingKey?.privateKey}`)
+            }
+        } catch (e: any) {
+            console.log('Transaction error', e);
+            alert(`Transaction Error: ${e.message}`)
+            setTransactionHash(e.message);
+        }
+
+    }
+
+    /** Minteando.me */
+
+    const createNFTCollection = async () => {
+        const collectionData: CollectionDataType = {
+            name: "NFT Collection Test 2",
+            symbol: "NFTEST2",
+            maxNFTs: 5,
+            blockchain: 4, // Polygon Testnet Blockchain
+            smartContractType: 0, // Smart contract types ?
+            configurationNFTs : {
+                whiteList: false,
+                uniqueImage: "https://i.ibb.co/LddtCyv/Blog-Post-Free-Stock-Images-River-Mountain-Forest-1080x675.jpg"
+            },
+            attributes: [
+                {
+                    key: "price",
+                    value: "89.99"
+                },
+                {
+                    key: "accessType",
+                    value: "normal"
+                },
+                {
+                    key: "image",
+                    value: "https://i.ibb.co/LddtCyv/Blog-Post-Free-Stock-Images-River-Mountain-Forest-1080x675.jpg"
+                },
+                {
+                    key: "commission",
+                    value: "3"
+                }
+            ]
+        }
+
+        const response: any = await createNFTCollectionWithMint4All(collectionData);
+        setNftCollectionData(response?.data?.result)
+        setCollectionId(response?.data?.result?.smartContractId)
+    }
+
+    const getNFTCollection = async () => {
+        const response: any = await getNFTCollectionWithMint4All(collectionId);
+        setRetrievedNftCollectionData(response?.data?.result);
     }
 
     const mintNFT = async () => {
@@ -325,7 +357,7 @@ const Home: NextPage = () => {
 
     return (
         <div>
-            <h1>Metamask wallet creation test</h1>
+            <h1>Blockchain tests</h1>
             <br/>
             <h2>Wallet creation</h2>
             <button onClick={createWallet}>CREATE WALLET</button>
@@ -390,15 +422,22 @@ const Home: NextPage = () => {
                 <pre>{JSON.stringify({from: accounts[0], to: accounts[0], amount}, null, 4)}</pre>
             </div>
             <br/>
+            <h3>With Ethers using the Private Key without confirmation</h3>
+            <button onClick={() => pay()}>MAKE TRANSACTION WITHOUT CONFIRMATION</button>
+
+            <br/>
+            <br/>
+            <br/>
+
             <h3>With Chrome Extension Wallet</h3>
-            <button onClick={() => pay()}>MAKE TRANSACTION</button>
+            <button onClick={() => payWithMetamask()}>MAKE TRANSACTION WITH EXTENSION</button>
 
             <br/>
             <br/>
             <br/>
 
             <h3>With Wallet Connect (QR)</h3>
-            <button onClick={() => payWithWalletConnect()}>MAKE TRANSACTION</button>
+            <button onClick={() => payWithWalletConnect()}>MAKE TRANSACTION WITH MOBILE APP</button>
             <pre>Transaction Hash: {JSON.stringify(transactionHash, null, 4)}</pre>
 
             <br/>
@@ -414,7 +453,7 @@ const Home: NextPage = () => {
 
             <br/>
 
-            <h3>GET NFT Collection Data</h3>
+            <h3>Get NFT Collection Data</h3>
             <div>
                 <label htmlFor="collectionId">Collection ID: </label>
                 <input
