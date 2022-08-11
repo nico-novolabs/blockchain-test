@@ -8,7 +8,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import MetaMaskOnboarding from '@metamask/onboarding';
 import NodeWalletConnect from "@walletconnect/client";
 import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
-import {makeTransaction} from "./utils";
+import {makeTransaction, makeTransactionWithWalletConnect} from "./utils";
 
 type ResponseType = {
     status: number,
@@ -278,6 +278,17 @@ const Home: NextPage = () => {
         });
     }
 
+    const payWithWalletConnect = async () => {
+        setTransactionHash('Pending transaction...');
+        const hash = await makeTransactionWithWalletConnect(
+            walletConnect.accounts[0],
+            walletConnect.accounts[0],
+            amount
+        );
+        console.log('transactionHash', hash);
+        setTransactionHash(hash)
+    }
+
     return (
         <div>
             <h1>Metamask wallet creation test</h1>
@@ -301,7 +312,7 @@ const Home: NextPage = () => {
             <h3>Wallet Conection to MetaMask via QR Code</h3>
             <button onClick={scanQR}>CONNECT WALLET</button>
             <pre>Scanned wallet: {JSON.stringify(scannedWallet, null, 4)}</pre>
-            <pre>Localstorage wallet: {JSON.stringify(walletConnect, null, 4)}</pre>
+            <pre>LocalStorage wallet: {JSON.stringify(walletConnect, null, 4)}</pre>
 
             <br/>
             <p>---------------------------</p>
@@ -323,7 +334,7 @@ const Home: NextPage = () => {
             <br/>
             <p>---------------------------</p>
             <br/>
-            <h3>Make Transaction With Chrom Extension Wallet</h3>
+            <h3>Make Transaction</h3>
             <div>
                 <label htmlFor="testNet">Amount: </label>
                 <input
@@ -334,7 +345,15 @@ const Home: NextPage = () => {
                 <pre>{JSON.stringify({from: accounts[0], to: accounts[0], amount}, null, 4)}</pre>
             </div>
             <br/>
+            <h4>With Chrome Extension Wallet</h4>
             <button onClick={() => pay()}>MAKE TRANSACTION</button>
+
+            <br/>
+            <br/>
+            <br/>
+
+            <h4>With Wallet Connect (QR)</h4>
+            <button onClick={() => payWithWalletConnect()}>MAKE TRANSACTION</button>
             <pre>Transaction Hash: {JSON.stringify(transactionHash, null, 4)}</pre>
 
             <br/>
