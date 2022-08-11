@@ -415,7 +415,7 @@ const Home: NextPage = () => {
                 <br/>
 
                 <h3>Add network in the mobile app</h3>
-                <pre>TODO - I think the network it has to be manually configured in the mobile app </pre>
+                <pre>TODO - I think the network has to be manually configured in the mobile app </pre>
             </div>
 
             <hr/>
