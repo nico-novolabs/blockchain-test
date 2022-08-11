@@ -11,6 +11,9 @@
   "dependencies": {
     "@metamask/detect-provider": "^1.2.0",
     "@metamask/onboarding": "^1.0.1",
+    "@walletconnect/client": "^1.8.0",
+    "@walletconnect/node": "^1.0.0",
+    "@walletconnect/qrcode-modal": "^1.8.0",
     "axios": "^0.27.2",
     "ethers": "^5.6.9",
     "next": "12.2.3",

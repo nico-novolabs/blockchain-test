@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import type { NextPage } from 'next'
 import { ethers } from "ethers";
 import {useState} from "react";
@@ -6,7 +6,8 @@ import axios from "axios";
 // This function detects most providers injected at window.ethereum
 import detectEthereumProvider from '@metamask/detect-provider';
 import MetaMaskOnboarding from '@metamask/onboarding';
-import crypto from "crypto";
+import NodeWalletConnect from "@walletconnect/client";
+import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
 import {makeTransaction} from "./utils";
 
 type ResponseType = {
@@ -25,6 +26,8 @@ const Home: NextPage = () => {
     const [provider, setProvider] = useState<any>({});
     const [transactionHash, setTransactionHash] = useState<any>('');
     const [amount, setAmount] = useState('0.1');
+    const [scannedWallet, setScannedWallet] = useState<any>({});
+    const [walletConnect, setWalletConnect] = useState<any>({});
 
     useEffect(() => {
         if (!onboarding.current) {
@@ -32,7 +35,12 @@ const Home: NextPage = () => {
         }
         let existentWallet = localStorage.getItem('wallet') || '{}';
         existentWallet = JSON.parse(existentWallet);
+
+        let existentScannedWallet = localStorage.getItem('walletconnect') || '{}';
+        existentScannedWallet = JSON.parse(existentScannedWallet);
+
         setWallet(existentWallet);
+        setWalletConnect(existentScannedWallet);
         getProvider();
     }, []);
 
@@ -163,6 +171,113 @@ const Home: NextPage = () => {
 
     }
 
+    const createNFTCollection = async () => {
+        try {
+            const response = await axios.post(
+                'https://mint4all.xyz/api/mint4All/v1/smart-contract',
+                {
+                    maxNFTs: 20,
+                    name: "NFT Collection Test",
+                    symbol: "NFTEST",
+                    blockchain: 4, // Polygon TestNet
+                    smartContractType: 0, // Smart contract types ??
+                    attributes: [
+                        {
+                            key: "price",
+                            value: "120.99"
+                        },
+                        {
+                            key: "accessType",
+                            value: "vip"
+                        }
+                    ]
+                },
+                {
+                    headers: {
+                        'api-key': '60129374-59cd-40d9-aa8e-e90e81fff8e3'
+                    }
+                }
+            )
+
+            console.log('response', response);
+        } catch (e: any) {
+            console.log('Error', e);
+            alert(e.message);
+        }
+
+    }
+
+    const scanQR = async () => {
+
+        // Create connector
+        const walletConnector = new NodeWalletConnect(
+            {
+                bridge: "https://bridge.walletconnect.org", // Required
+            }
+        );
+
+        // Check if connection is already established
+        if (!walletConnector.connected) {
+            // create new session
+            walletConnector.createSession().then(() => {
+                // get uri for QR Code modal
+                const uri = walletConnector.uri;
+                // display QR Code modal
+                WalletConnectQRCodeModal.open(
+                    uri,
+                    () => {
+                        console.log("QR Code Modal closed");
+                    }
+                );
+            });
+        }
+
+        // Subscribe to connection events
+        walletConnector.on("connect", (error, payload) => {
+            if (error) {
+                console.log('connect', error);
+            }
+
+            // Close QR Code Modal
+            WalletConnectQRCodeModal.close();
+
+            // Get provided accounts and chainId
+            const { accounts, chainId } = payload.params[0];
+
+            console.log('connect', payload);
+
+            setScannedWallet(payload);
+
+            let existentScannedWallet = localStorage.getItem('walletconnect') || '{}';
+            existentScannedWallet = JSON.parse(existentScannedWallet);
+
+            setWalletConnect(existentScannedWallet);
+        });
+
+        walletConnector.on("session_update", (error, payload) => {
+            if (error) {
+                console.log('session_update', error);
+            }
+
+            // Get updated accounts and chainId
+            const { accounts, chainId } = payload.params[0];
+
+            console.log('session_update', payload);
+        });
+
+        walletConnector.on("disconnect", (error, payload) => {
+            if (error) {
+                console.log('disconnect', error);
+            }
+
+
+
+            console.log('disconnect', payload);
+
+            // Delete walletConnector
+        });
+    }
+
     return (
         <div>
             <h1>Metamask wallet creation test</h1>
@@ -175,9 +290,18 @@ const Home: NextPage = () => {
             <p>---------------------------</p>
             <br/>
 
-            <h3>2. Wallet conection to MetaMask</h3>
+            <h3>2. Wallet conection to MetaMask via Chrome Extension</h3>
             <button onClick={connectMetamask}>CONNECT TO METAMASK</button>
             <pre>Status: {status}</pre>
+
+            <br/>
+            <p>---------------------------</p>
+            <br/>
+
+            <h3>Wallet Conection to MetaMask via QR Code</h3>
+            <button onClick={scanQR}>CONNECT WALLET</button>
+            <pre>Scanned wallet: {JSON.stringify(scannedWallet, null, 4)}</pre>
+            <pre>Localstorage wallet: {JSON.stringify(walletConnect, null, 4)}</pre>
 
             <br/>
             <p>---------------------------</p>
@@ -194,11 +318,12 @@ const Home: NextPage = () => {
             </div>
             <br/>
             <button onClick={() => addPolygonNetwork()}>ADD POLYGON NETWORK</button>
+            <pre></pre>
 
             <br/>
             <p>---------------------------</p>
             <br/>
-            <h3>Make Transaction</h3>
+            <h3>Make Transaction With Chrom Extension Wallet</h3>
             <div>
                 <label htmlFor="testNet">Amount: </label>
                 <input
@@ -215,8 +340,16 @@ const Home: NextPage = () => {
             <br/>
             <p>---------------------------</p>
             <br/>
-            <h3>Provider</h3>
-            <pre>Provider: {JSON.stringify(provider, null, 4)}</pre>
+
+            <h3>WIP - Create NFT Collection With Minteando.me - WIP</h3>
+            <button onClick={createNFTCollection}>CREATE NFT COLLECTION</button>
+            <pre></pre>
+
+            <br/>
+            <p>---------------------------</p>
+            <br/>
+
+            <h3></h3>
         </div>
     )
 }
