@@ -204,10 +204,11 @@ const Home: NextPage = () => {
 
             setScannedWallet(payload);
 
-            let existentScannedWallet = localStorage.getItem('walletconnect') || '{}';
+            let existentScannedWallet: any = localStorage.getItem('walletconnect') || '{}';
             existentScannedWallet = JSON.parse(existentScannedWallet);
 
             setWalletConnect(existentScannedWallet);
+            setAccounts(existentScannedWallet.accounts)
         });
 
         walletConnector.on("session_update", (error, payload) => {
@@ -419,7 +420,11 @@ const Home: NextPage = () => {
                     value={amount}
                     onChange={(e) => {setAmount(e.target.value)}}
                 />
-                <pre>{JSON.stringify({from: accounts[0], to: accounts[0], amount}, null, 4)}</pre>
+                <pre>{JSON.stringify({
+                    from: accounts ? accounts[0] : '',
+                    to: accounts ? accounts[0] : '',
+                    amount
+                }, null, 4)}</pre>
             </div>
             <br/>
             <h3>With Ethers using the Private Key without confirmation</h3>
@@ -429,8 +434,8 @@ const Home: NextPage = () => {
             <br/>
             <br/>
 
-            <h3>With Chrome Extension Wallet</h3>
-            <button onClick={() => payWithMetamask()}>MAKE TRANSACTION WITH EXTENSION</button>
+            <h3>With Chrome Extension</h3>
+            <button onClick={() => payWithMetamask()}>MAKE TRANSACTION WITH CHROME EXTENSION</button>
 
             <br/>
             <br/>
@@ -476,7 +481,7 @@ const Home: NextPage = () => {
                     value={collectionId}
                     onChange={(e) => {setCollectionId(e.target.value)}}
                 />
-                <pre>Wallet: {accounts[0]}</pre>
+                <pre>Wallet: {accounts ? accounts[0] : ''}</pre>
             </div>
             <br/>
             <button onClick={mintNFT}>MINT NFT FROM COLLECTION</button>

@@ -106,3 +106,15 @@ export const mintNFTFromCollection = async (mintNftData: MintNftDataType) => {
         alert(e.message);
     }
 }
+
+
+/*
+POST - https://api.mint4all.xyz/minteandome/mint4All/v1/smart-contract/sign/62f53c198daeeb6965854401
+
+body: {
+    "smartContractAddress": "0x69a517Ea397DBeB3988018bE7B50dDA1f8CBB2e7"
+}
+
+GET - https://api.mint4all.xyz/minteandome/mint4All/v1/smart-contract/signed
+
+ */
