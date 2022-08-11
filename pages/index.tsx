@@ -369,6 +369,8 @@ const Home: NextPage = () => {
             {/* Wallet Creation */}
             <div style={style}>
                 <h2>Wallet creation</h2>
+
+                <h3> 👉 With Ethers.js</h3>
                 <button onClick={createWallet}>CREATE WALLET</button>
                 <pre>Wallet: <span>{JSON.stringify(wallet, null, 4)}</span></pre>
             </div>
@@ -379,14 +381,14 @@ const Home: NextPage = () => {
             <div style={style}>
                 <h2>Wallet connection</h2>
 
-                <h3>Wallet conection to MetaMask via Chrome Extension</h3>
+                <h3> 👉 Wallet conection to MetaMask via Chrome Extension</h3>
                 <button onClick={connectMetamask}>CONNECT TO METAMASK</button>
                 <pre>Status: {status}</pre>
 
                 <br/>
                 <br/>
 
-                <h3>Wallet Conection to MetaMask via QR Code</h3>
+                <h3> 👉 Wallet Conection to MetaMask via QR Code</h3>
                 <button onClick={scanQR}>CONNECT WALLET</button>
                 <pre>Scanned wallet: {JSON.stringify(scannedWallet, null, 4)}</pre>
                 <pre>LocalStorage wallet: {JSON.stringify(walletConnect, null, 4)}</pre>
@@ -398,7 +400,7 @@ const Home: NextPage = () => {
             <div style={style}>
                 <h2>Add Polygon Network in Metamask</h2>
 
-                <h3>Add network in chrome extension</h3>
+                <h3> 👉 Add network in chrome extension</h3>
                 <div>
                     <label htmlFor="testNet">Polygon TestNet ? </label>
                     <input
@@ -414,7 +416,7 @@ const Home: NextPage = () => {
                 <br/>
                 <br/>
 
-                <h3>Add network in the mobile app</h3>
+                <h3> 👉 Add network in the mobile app</h3>
                 <pre>TODO - I think the network has to be manually configured in the mobile app </pre>
             </div>
 
@@ -439,21 +441,21 @@ const Home: NextPage = () => {
                     }, null, 4)}</pre>
                 </div>
                 <br/>
-                <h3>With Ethers using the Private Key without confirmation</h3>
+                <h3> 👉 With Ethers using the Private Key without confirmation</h3>
                 <button onClick={() => pay()}>MAKE TRANSACTION WITHOUT CONFIRMATION</button>
 
                 <br/>
                 <br/>
                 <br/>
 
-                <h3>With Chrome Extension</h3>
+                <h3> 👉 With Chrome Extension</h3>
                 <button onClick={() => payWithMetamask()}>MAKE TRANSACTION WITH CHROME EXTENSION</button>
 
                 <br/>
                 <br/>
                 <br/>
 
-                <h3>With Wallet Connect (QR)</h3>
+                <h3> 👉 With Wallet Connect (QR)</h3>
                 <button onClick={() => payWithWalletConnect()}>MAKE TRANSACTION WITH MOBILE APP</button>
                 <pre>Transaction Hash: {JSON.stringify(transactionHash, null, 4)}</pre>
             </div>
@@ -464,13 +466,13 @@ const Home: NextPage = () => {
             <div style={style}>
                 <h2> Minteando.me </h2>
 
-                <h3>Create NFT Collection</h3>
+                <h3> 👉 Create NFT Collection</h3>
                 <button onClick={createNFTCollection}>CREATE NFT COLLECTION</button>
                 <pre>Collection Data: {JSON.stringify(nftCollectionData, null, 4)}</pre>
 
                 <br/>
 
-                <h3>Get NFT Collection Data</h3>
+                <h3> 👉 Get NFT Collection Data</h3>
                 <div>
                     <label htmlFor="collectionId">Collection ID: </label>
                     <input
@@ -485,7 +487,7 @@ const Home: NextPage = () => {
 
                 <br/>
 
-                <h3>Mint NFT From Collection</h3>
+                <h3> 👉 Mint NFT From Collection</h3>
                 <div>
                     <label htmlFor="collectionId">Collection ID: </label>
                     <input
