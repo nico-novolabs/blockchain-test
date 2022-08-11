@@ -216,11 +216,12 @@ const Home: NextPage = () => {
         }
 
         const response: any = await createNFTCollectionWithMint4All(collectionData);
-        setNftCollectionData(response.data?.result)
+        setNftCollectionData(response?.data?.result)
+        setCollectionId(response?.data?.result?.smartContractId)
     }
 
     const getNFTCollection = async () => {
-        const response: any = await getNFTCollectionWithMint4All('62f53c198daeeb6965854401'/*nftCollectionData.smartContractId*/);
+        const response: any = await getNFTCollectionWithMint4All(collectionId);
         setRetrievedNftCollectionData(response?.data?.result);
     }
 
