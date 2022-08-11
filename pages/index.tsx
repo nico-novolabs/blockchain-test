@@ -8,7 +8,15 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import MetaMaskOnboarding from '@metamask/onboarding';
 import NodeWalletConnect from "@walletconnect/client";
 import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
-import {makeTransaction, makeTransactionWithWalletConnect} from "./utils";
+import {makeTransactionWithEthers} from "./ethers";
+import {makeTransactionWithWalletConnect} from "./walletConnect";
+import {
+    CollectionDataType,
+    createNFTCollectionWithMint4All,
+    getNFTCollectionWithMint4All,
+    MintNftDataType,
+    mintNFTFromCollection
+} from "./mint4all";
 
 type ResponseType = {
     status: number,
@@ -28,17 +36,22 @@ const Home: NextPage = () => {
     const [amount, setAmount] = useState('0.1');
     const [scannedWallet, setScannedWallet] = useState<any>({});
     const [walletConnect, setWalletConnect] = useState<any>({});
+    const [nftCollectionData, setNftCollectionData] = useState<any>({});
+    const [retrievedNftCollectionData, setRetrievedNftCollectionData] = useState<any>({});
+    const [mintedNftData, setMintedNftData] = useState<any>({});
+    const [collectionId, setCollectionId] = useState<string>('');
 
     useEffect(() => {
         if (!onboarding.current) {
             onboarding.current = new MetaMaskOnboarding();
         }
-        let existentWallet = localStorage.getItem('wallet') || '{}';
+        let existentWallet: any = localStorage.getItem('wallet') || '{}';
         existentWallet = JSON.parse(existentWallet);
 
-        let existentScannedWallet = localStorage.getItem('walletconnect') || '{}';
+        let existentScannedWallet: any = localStorage.getItem('walletconnect') || '{}';
         existentScannedWallet = JSON.parse(existentScannedWallet);
 
+        setAccounts(existentScannedWallet ? existentScannedWallet.accounts : existentWallet.accounts || [])
         setWallet(existentWallet);
         setWalletConnect(existentScannedWallet);
         getProvider();
@@ -161,7 +174,7 @@ const Home: NextPage = () => {
     const pay = async () => {
         setTransactionHash('Pending transaction...');
         if(accounts && accounts[0] && amount && wallet?.signingKey?.privateKey) {
-            const hash = await makeTransaction(accounts[0], accounts[0], amount, wallet.signingKey.privateKey);
+            const hash = await makeTransactionWithEthers(accounts[0], accounts[0], amount, wallet.signingKey.privateKey);
             console.log('transactionHash', hash);
             setTransactionHash(hash)
         } else {
@@ -172,39 +185,43 @@ const Home: NextPage = () => {
     }
 
     const createNFTCollection = async () => {
-        try {
-            const response = await axios.post(
-                'https://mint4all.xyz/api/mint4All/v1/smart-contract',
+        const collectionData: CollectionDataType = {
+            name: "NFT Collection Test 2",
+            symbol: "NFTEST2",
+            maxNFTs: 5,
+            blockchain: 4, // Polygon Testnet Blockchain
+            smartContractType: 0, // Smart contract types ?
+            configurationNFTs : {
+                whiteList: false,
+                uniqueImage: "https://i.ibb.co/LddtCyv/Blog-Post-Free-Stock-Images-River-Mountain-Forest-1080x675.jpg"
+            },
+            attributes: [
                 {
-                    maxNFTs: 20,
-                    name: "NFT Collection Test",
-                    symbol: "NFTEST",
-                    blockchain: 4, // Polygon TestNet
-                    smartContractType: 0, // Smart contract types ??
-                    attributes: [
-                        {
-                            key: "price",
-                            value: "120.99"
-                        },
-                        {
-                            key: "accessType",
-                            value: "vip"
-                        }
-                    ]
+                    key: "price",
+                    value: "89.99"
                 },
                 {
-                    headers: {
-                        'api-key': '60129374-59cd-40d9-aa8e-e90e81fff8e3'
-                    }
+                    key: "accessType",
+                    value: "normal"
+                },
+                {
+                    key: "image",
+                    value: "https://i.ibb.co/LddtCyv/Blog-Post-Free-Stock-Images-River-Mountain-Forest-1080x675.jpg"
+                },
+                {
+                    key: "commission",
+                    value: "3"
                 }
-            )
-
-            console.log('response', response);
-        } catch (e: any) {
-            console.log('Error', e);
-            alert(e.message);
+            ]
         }
 
+        const response: any = await createNFTCollectionWithMint4All(collectionData);
+        setNftCollectionData(response.data?.result)
+    }
+
+    const getNFTCollection = async () => {
+        const response: any = await getNFTCollectionWithMint4All('62f53c198daeeb6965854401'/*nftCollectionData.smartContractId*/);
+        setRetrievedNftCollectionData(response?.data?.result);
     }
 
     const scanQR = async () => {
@@ -289,24 +306,41 @@ const Home: NextPage = () => {
         setTransactionHash(hash)
     }
 
+    const mintNFT = async () => {
+        const nftData: MintNftDataType = {
+            byUser: false,
+            userWallet: accounts[0],
+            smartContractId: collectionId,
+            metadata: [{
+                name: 'Minted NFT Name',
+                description: 'Minted NFT Description'
+            }]
+        }
+
+        const response = await mintNFTFromCollection(nftData);
+
+        setMintedNftData(response?.data?.result);
+    }
+
     return (
         <div>
             <h1>Metamask wallet creation test</h1>
             <br/>
-            <h3>1. Wallet creation</h3>
+            <h2>Wallet creation</h2>
             <button onClick={createWallet}>CREATE WALLET</button>
             <pre>Wallet: <span>{JSON.stringify(wallet, null, 4)}</span></pre>
 
             <br/>
-            <p>---------------------------</p>
+            <hr/>
             <br/>
 
-            <h3>2. Wallet conection to MetaMask via Chrome Extension</h3>
+            <h2>Wallet connection</h2>
+
+            <h3>Wallet conection to MetaMask via Chrome Extension</h3>
             <button onClick={connectMetamask}>CONNECT TO METAMASK</button>
             <pre>Status: {status}</pre>
 
             <br/>
-            <p>---------------------------</p>
             <br/>
 
             <h3>Wallet Conection to MetaMask via QR Code</h3>
@@ -315,10 +349,12 @@ const Home: NextPage = () => {
             <pre>LocalStorage wallet: {JSON.stringify(walletConnect, null, 4)}</pre>
 
             <br/>
-            <p>---------------------------</p>
+            <hr/>
             <br/>
 
-            <h3>3. Add Polygon Network</h3>
+            <h2>Add Polygon Network in Metamask</h2>
+
+            <h3>Add network in chrome extension</h3>
             <div>
                 <label htmlFor="testNet">Polygon TestNet ? </label>
                 <input
@@ -332,9 +368,17 @@ const Home: NextPage = () => {
             <pre></pre>
 
             <br/>
-            <p>---------------------------</p>
             <br/>
-            <h3>Make Transaction</h3>
+
+            <h3>Add network in the mobile app</h3>
+            <pre>WIP</pre>
+
+            <br/>
+            <hr/>
+            <br/>
+
+
+            <h2>Make Transaction</h2>
             <div>
                 <label htmlFor="testNet">Amount: </label>
                 <input
@@ -345,27 +389,61 @@ const Home: NextPage = () => {
                 <pre>{JSON.stringify({from: accounts[0], to: accounts[0], amount}, null, 4)}</pre>
             </div>
             <br/>
-            <h4>With Chrome Extension Wallet</h4>
+            <h3>With Chrome Extension Wallet</h3>
             <button onClick={() => pay()}>MAKE TRANSACTION</button>
 
             <br/>
             <br/>
             <br/>
 
-            <h4>With Wallet Connect (QR)</h4>
+            <h3>With Wallet Connect (QR)</h3>
             <button onClick={() => payWithWalletConnect()}>MAKE TRANSACTION</button>
             <pre>Transaction Hash: {JSON.stringify(transactionHash, null, 4)}</pre>
 
             <br/>
-            <p>---------------------------</p>
+            <hr/>
             <br/>
 
-            <h3>WIP - Create NFT Collection With Minteando.me - WIP</h3>
+            <h2> Minteando.me </h2>
+
+
+            <h3>Create NFT Collection</h3>
             <button onClick={createNFTCollection}>CREATE NFT COLLECTION</button>
-            <pre></pre>
+            <pre>Collection Data: {JSON.stringify(nftCollectionData, null, 4)}</pre>
 
             <br/>
-            <p>---------------------------</p>
+
+            <h3>GET NFT Collection Data</h3>
+            <div>
+                <label htmlFor="collectionId">Collection ID: </label>
+                <input
+                    type="text"
+                    value={collectionId}
+                    onChange={(e) => {setCollectionId(e.target.value)}}
+                />
+            </div>
+            <br/>
+            <button onClick={getNFTCollection}>GET NFT COLLECTION</button>
+            <pre>Collection Data: {JSON.stringify(retrievedNftCollectionData, null, 4)}</pre>
+
+            <br/>
+
+            <h3>Mint NFT From Collection</h3>
+            <div>
+                <label htmlFor="collectionId">Collection ID: </label>
+                <input
+                    type="text"
+                    value={collectionId}
+                    onChange={(e) => {setCollectionId(e.target.value)}}
+                />
+                <pre>Wallet: {accounts[0]}</pre>
+            </div>
+            <br/>
+            <button onClick={mintNFT}>MINT NFT FROM COLLECTION</button>
+            <pre>Minted NFT Data: {JSON.stringify(mintedNftData, null, 4)}</pre>
+
+            <br/>
+            <hr/>
             <br/>
 
             <h3></h3>
