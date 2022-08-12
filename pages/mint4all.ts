@@ -85,14 +85,14 @@ export type MintNftDataType = {
 export const mintNFTFromCollection = async (mintNftData: MintNftDataType) => {
     try {
         const response = await axios.post(
-            `${MINT4ALL_URL}/nft/generate-nft/${mintNftData.smartContractId}`,
+            `${MINT4ALL_URL}/nft/generate-nft/${mintNftData.smartContractId}?byUser=${mintNftData.byUser}`,
             [{
                 userWallet: mintNftData.userWallet,
-                byUser: mintNftData.byUser,
                 metadata: mintNftData.metadata
             }],
             {
                 headers: {
+                    'Content-Type': 'application/json',
                     'API_KEY': API_KEY
                 }
             }

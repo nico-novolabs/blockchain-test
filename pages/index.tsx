@@ -342,12 +342,31 @@ const Home: NextPage = () => {
 
     const mintNFT = async () => {
         const nftData: MintNftDataType = {
-            byUser: false,
+            byUser: true,
             userWallet: accounts[0],
             smartContractId: collectionId,
             metadata: [{
                 name: 'Minted NFT Name',
-                description: 'Minted NFT Description'
+                description: 'Minted NFT Description',
+                image: 'https://i.ibb.co/LddtCyv/Blog-Post-Free-Stock-Images-River-Mountain-Forest-1080x675.jpg',
+                attributes: [
+                    {
+                        key: "price",
+                        value: "89.99"
+                    },
+                    {
+                        key: "accessType",
+                        value: "normal"
+                    },
+                    {
+                        key: "image",
+                        value: "https://i.ibb.co/LddtCyv/Blog-Post-Free-Stock-Images-River-Mountain-Forest-1080x675.jpg"
+                    },
+                    {
+                        key: "commission",
+                        value: "3"
+                    }
+                ]
             }]
         }
 
@@ -506,7 +525,7 @@ const Home: NextPage = () => {
                         value={collectionId}
                         onChange={(e) => {setCollectionId(e.target.value)}}
                     />
-                    <pre>Wallet: {accounts ? accounts[0] : ''}</pre>
+                    <pre>Destination wallet: {accounts ? accounts[0] : ''}</pre>
                 </div>
                 <br/>
                 <button onClick={mintNFT}>MINT NFT FROM COLLECTION</button>
