@@ -39,7 +39,7 @@ const Home: NextPage = () => {
     const [nftCollectionData, setNftCollectionData] = useState<any>({});
     const [retrievedNftCollectionData, setRetrievedNftCollectionData] = useState<any>({});
     const [mintedNftData, setMintedNftData] = useState<any>({});
-    const [collectionId, setCollectionId] = useState<string>('');
+    const [collectionId, setCollectionId] = useState<string>('62f53c198daeeb6965854401');
 
     useEffect(() => {
         if (!onboarding.current) {
