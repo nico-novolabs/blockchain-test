@@ -341,13 +341,14 @@ const Home: NextPage = () => {
     }
 
     const mintNFT = async () => {
+        setMintedNftData('Minting NFT..')
         const nftData: MintNftDataType = {
-            byUser: true,
+            byUser: false,
             userWallet: accounts[0],
             smartContractId: collectionId,
             metadata: [{
-                name: 'Minted NFT Name',
-                description: 'Minted NFT Description',
+                name: 'Green Mountains',
+                description: 'Testing nft creation',
                 image: 'https://i.ibb.co/LddtCyv/Blog-Post-Free-Stock-Images-River-Mountain-Forest-1080x675.jpg',
                 attributes: [
                     {

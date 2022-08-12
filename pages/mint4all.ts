@@ -12,8 +12,8 @@ export type CollectionDataType = {
     name: string,
     symbol: string,
     maxNFTs: number,
-    blockchain: 4,
-    smartContractType: 0,
+    blockchain: number,
+    smartContractType: number,
     configurationNFTs?: {
         uniqueImage?: string,
         folderImages?: string,
@@ -84,8 +84,15 @@ export type MintNftDataType = {
 
 export const mintNFTFromCollection = async (mintNftData: MintNftDataType) => {
     try {
+        let url = `${MINT4ALL_URL}/nft/generate-nft/${mintNftData.smartContractId}`;
+
+        // If the mint is not by the user, the query parameter does not have to exist. It can't be set to 'false'.
+        if(mintNftData.byUser) {
+            url += `?byUser=${mintNftData.byUser}`;
+        }
+
         const response = await axios.post(
-            `${MINT4ALL_URL}/nft/generate-nft/${mintNftData.smartContractId}?byUser=${mintNftData.byUser}`,
+            url,
             [{
                 userWallet: mintNftData.userWallet,
                 metadata: mintNftData.metadata
