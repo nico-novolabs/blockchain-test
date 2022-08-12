@@ -388,7 +388,18 @@ const Home: NextPage = () => {
                 <br/>
                 <br/>
 
-                <h3> 👉 Wallet Conection to MetaMask via QR Code</h3>
+                <h3> 👉 Wallet Conection via QR Code</h3>
+                <h5>
+                    (Multiple wallets, see{' '}
+                    <a
+                        style={{color: 'cyan'}}
+                        target={'blank'}
+                        href="https://explorer.walletconnect.com/registry?type=wallet"
+                    >
+                        DOCS
+                    </a>
+                    )
+                </h5>
                 <button onClick={scanQR}>CONNECT WALLET</button>
                 <pre>Scanned wallet: {JSON.stringify(scannedWallet, null, 4)}</pre>
                 <pre>LocalStorage wallet: {JSON.stringify(walletConnect, null, 4)}</pre>
