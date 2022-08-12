@@ -51,9 +51,18 @@ const Home: NextPage = () => {
         let existentScannedWallet: any = localStorage.getItem('walletconnect') || '{}';
         existentScannedWallet = JSON.parse(existentScannedWallet);
 
+        let lastMintedNft: any = localStorage.getItem('mintedNft') || '{}';
+        lastMintedNft = JSON.parse(lastMintedNft);
+
+        let lastNftCollection: any = localStorage.getItem('nftCollection') || '{}';
+        lastNftCollection = JSON.parse(lastNftCollection);
+
         setAccounts(existentScannedWallet ? existentScannedWallet.accounts : existentWallet.accounts || [])
         setWallet(existentWallet);
         setWalletConnect(existentScannedWallet);
+        setMintedNftData(lastMintedNft);
+        setNftCollectionData(lastNftCollection);
+        setCollectionId(lastNftCollection?.smartContractId)
     }, []);
 
     useEffect(() => {
@@ -333,6 +342,7 @@ const Home: NextPage = () => {
         const response: any = await createNFTCollectionWithMint4All(collectionData);
         setNftCollectionData(response?.data?.result)
         setCollectionId(response?.data?.result?.smartContractId)
+        localStorage.setItem('nftCollection', JSON.stringify(response?.data?.result));
     }
 
     const getNFTCollection = async () => {
@@ -372,6 +382,8 @@ const Home: NextPage = () => {
         }
 
         const response = await mintNFTFromCollection(nftData);
+
+        localStorage.setItem('mintedNft', JSON.stringify(response?.data?.result));
 
         setMintedNftData(response?.data?.result);
     }
