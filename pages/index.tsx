@@ -8,7 +8,7 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import MetaMaskOnboarding from '@metamask/onboarding';
 import NodeWalletConnect from "@walletconnect/client";
 import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
-import {makeTransactionWithEthers} from "./ethers";
+import {deploySmartContractWithEthers, makeTransactionWithEthers} from "./ethers";
 import {makeTransactionWithWalletConnect} from "./walletConnect";
 import {
     CollectionDataType,
@@ -40,6 +40,7 @@ const Home: NextPage = () => {
     const [retrievedNftCollectionData, setRetrievedNftCollectionData] = useState<any>({});
     const [mintedNftData, setMintedNftData] = useState<any>({});
     const [collectionId, setCollectionId] = useState<string>('62f53c198daeeb6965854401');
+    const [deployedContract, setDeployedContract] = useState<any>('Waiting Deployment..');
 
     useEffect(() => {
         if (!onboarding.current) {
@@ -388,6 +389,15 @@ const Home: NextPage = () => {
         setMintedNftData(response?.data?.result);
     }
 
+    const deploySmartContract = async () => {
+        setDeployedContract('Deploying Smart contract');
+        const result = await deploySmartContractWithEthers(nftCollectionData.SCToSign);
+
+        console.log('result', result);
+
+        setDeployedContract(result);
+    }
+
     const style = {
         backgroundColor: '#1a1a1a',
         margin: '20px',
@@ -509,7 +519,7 @@ const Home: NextPage = () => {
             <div style={style}>
                 <h2> Minteando.me </h2>
 
-                <h3> 👉 Create NFT Collection</h3>
+                <h3> 👉 Create NFT Collection / Smart Contract</h3>
                 <button onClick={createNFTCollection}>CREATE NFT COLLECTION</button>
                 <pre>Collection Data: {JSON.stringify(nftCollectionData, null, 4)}</pre>
 
@@ -547,8 +557,14 @@ const Home: NextPage = () => {
 
             <hr/>
 
+            {/*Smart Contract Interaction*/}
             <div style={style}>
+                <h2>WIP -- Using Ethers.js</h2>
 
+                <h3>👉 Deploy Smart Contract</h3>
+                <pre>Compiled Smart Contract: {JSON.stringify(nftCollectionData.SCToSign, null, 4)}</pre>
+                <button onClick={deploySmartContract}>DEPLOY SMART CONTRACT</button>
+                <pre>Deployed Contract: {JSON.stringify(deployedContract, null, 4)}</pre>
             </div>
         </div>
     )

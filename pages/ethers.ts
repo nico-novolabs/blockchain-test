@@ -1,4 +1,5 @@
-import { ethers } from 'ethers';
+import {ethers, ContractFactory, ContractInterface} from 'ethers';
+import {Interface} from "@ethersproject/abi";
 
 export async function makeTransactionWithEthers(sender: string, receiver: string, amount: string, privateKey: string) {
     console.log(`makeTransaction(receiver=${receiver}, sender=${sender}, amount=${amount})`)
@@ -56,6 +57,27 @@ export const hasEnoughBalance = async (
     console.log('totalCharges', (numberGasPrice + numberAmount))
 
     return balance >= (numberGasPrice + numberAmount);
+}
+
+export const deploySmartContractWithEthers = async (contractToSign: string) => {
+    try {
+        const factory: ContractFactory = ContractFactory.fromSolidity(contractToSign);
+
+        // If your contract requires constructor args, you can specify them here
+        const contract = await factory.deploy({
+            arg: 'value',
+            arg2: 'value 2'
+        });
+
+        console.log(contract.address);
+        console.log(contract.deployTransaction);
+
+        return contract;
+    } catch (e: any) {
+        console.log('SC Deployment error', e);
+        throw e;
+        return e.message;
+    }
 }
 
 
